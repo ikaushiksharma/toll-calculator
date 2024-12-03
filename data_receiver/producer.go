@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 
-	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/ikaushiksharma/toll-calculator/types"
 )
 type DataProducer interface{
