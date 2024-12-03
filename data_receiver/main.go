@@ -1,27 +1,60 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
-
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/gorilla/websocket"
 	"github.com/ikaushiksharma/toll-calculator/types"
 )
+
+const (
+	OBU_EVENTS_TOPIC = "obu-events"
+)
+
 type DataReceiver struct {
-	msgch chan types.OBUData
-	conn  *websocket.Conn
+	conn *websocket.Conn
+	p    *kafka.Producer
 }
 
 func main() {
 	log.Println("starting data receiver")
-	dr := NewDataReceiver()
+	dr, err := NewDataReceiver()
+	if err != nil {
+		log.Fatal(err)
+	}
 	http.HandleFunc("/ws", dr.handleWS)
 	http.ListenAndServe(":30000", nil)
 	log.Println("data receiver exited")
 
 	time.Sleep(time.Second * 60)
+}
+
+func (dr *DataReceiver) produceToKafka(data types.OBUData) error {
+	var p = dr.p
+	defer p.Close()
+
+	b, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	// Produce messages to topic (asynchronously
+	topic := OBU_EVENTS_TOPIC
+
+	err = p.Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+		Key:            []byte(fmt.Sprintf("%d", data.OBUID)),
+		Value:          b,
+	}, nil)
+
+	// Wait for message deliveries before shutting down
+	p.Flush(15 * 1000)
+	return err
 }
 
 func (dr *DataReceiver) handleWS(w http.ResponseWriter, r *http.Request) {
@@ -49,12 +82,17 @@ func (dr *DataReceiver) wsReceiveLoop() {
 			continue
 		}
 		log.Printf("received obu data from [%d]", data.OBUID)
-		dr.msgch <- data
+		dr.produceToKafka(data)
 	}
 }
 
-func NewDataReceiver() *DataReceiver {
-	return &DataReceiver{
-		msgch: make(chan types.OBUData, 8),
+func NewDataReceiver() (*DataReceiver, error) {
+	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": "localhost"})
+	if err != nil {
+		return nil, err
 	}
+
+	return &DataReceiver{
+		p: p,
+	}, nil
 }
