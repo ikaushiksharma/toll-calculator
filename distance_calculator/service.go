@@ -16,10 +16,7 @@ type CalculatorService struct {
 }
 
 func NewCalculatorService() CalculatorServicer {
-	return &CalculatorService{
-		PrevPoint: []float64{},
-	}
-
+	return &CalculatorService{}
 }
 
 func (s *CalculatorService) CalculateDistance(data types.OBUData) (float64, error) {

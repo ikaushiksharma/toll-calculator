@@ -10,4 +10,4 @@ calculator :
 agg:
 	@go build -o bin/agg ./aggregator
 	@./bin/agg
-.PHONY: obu, receiver, calculator, agg
+.PHONY: obu receiver calculator agg
