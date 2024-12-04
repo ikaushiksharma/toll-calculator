@@ -35,3 +35,44 @@ docker-compose up -d
 ```bash
 go get github.com/sirupsen/logrus
 ```
+
+## How to run?
+- run this command : `docker-compose up -d` to run the kafka and zookeeper on your local machine
+- run these commands seperately
+```
+make receiver
+make obu
+make calculator
+make agg
+```
+- Now you can open your thunderclient and check both the REST API's
+  1. `/invoice` : This calculates the invoice of the  given OBU ID in the query
+  - endpoint : `http://localhost:3000/invoice?obu=6428921451518044973`
+  - METHOD : `GET`
+  - Response body : 
+    ```
+    {
+        "obuID": 6428921451518044973,
+        "totalDistance": 35.86001233283358,
+        "totalAmount": 112.95903884842576
+    }
+    ```
+ 2. `/aggregate` : This is used to aggregate all the data coming from distance calculator automatically, but you can also send some data as JSON if you want to do it manually here as:
+    - endpoint : `http://localhost:3000/aggregate`
+    - METHOD : `POST`
+    - Request Body : 
+        ```
+        {
+            "value": 20.12,
+            "obuID": 1838,
+            "unix": 73378
+        }
+        ```
+    - Response (Server log):
+        ```
+       
+        HTTP Transport running at port :3000...
+        INFO[0003] aggregating distance         distance=20.12 obuid=1838 unix=73378
+        INFO[0003] AggregateDistance            err="<nil>" took="47.03µs"
+        
+        ```
