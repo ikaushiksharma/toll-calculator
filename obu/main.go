@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"math"
 	"math/rand"
 	"time"
 
@@ -24,7 +23,7 @@ func Location() (float64,float64){
 func generateOBUID(n int) []int {
 	ids := make([]int,n)
 	for i := 0; i < n; i++ {
-		ids[i] = rand.Intn(math.MaxInt)
+		ids[i] = rand.Intn(999999)
 	}
 	return ids
 }

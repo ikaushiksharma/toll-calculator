@@ -37,7 +37,7 @@ func main() {
 	
 	}
 	if err := c.Aggregate(context.Background(),&types.AggregateRequest{
-		ObuID: 1,
+		ObuID: 1098,
 		Value: 6472.23,
 		Unix: time.Now().UnixNano(),
 	}); err != nil {
