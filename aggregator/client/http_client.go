@@ -8,15 +8,18 @@ import (
 
 	"github.com/ikaushiksharma/toll-calculator/types"
 )
-type Client struct {
+type HTTPClient struct {
 	EndPoint string
 }
-func NewClient(endpoint string) *Client {
-	return &Client{
+
+func NewHTTPClient(endpoint string) *HTTPClient {
+	return &HTTPClient{
 		EndPoint: endpoint,
 	}
 }
-func (c *Client) AggregateInvoice(distance types.Distance) error {
+
+// the client here is putting all the distance data coming from distance calculator to the aggregator service
+func (c *HTTPClient) AggregateInvoice(distance types.Distance) error {
 	b, err := json.Marshal(distance)
 	if err != nil {
 		return err
