@@ -3,17 +3,18 @@ syntax = "proto3";
 option go_package = "github.com/adarsh-jaiss/microservice-toll-calculator/types";
 
 service Aggregator {
-	rpc Aggregate(AggregateRequest) returns (None);
+  rpc Aggregate(AggregateRequest) returns (None);
+  rpc GetInvoice(GetInvoiceRequest) returns (None);
 }
 
 message None {}
 
 message GetInvoiceRequest {
-	int32 ObuID = 1 ;
+  int32 ObuID = 1;
 }
 
 message AggregateRequest {
-	int32 ObuID = 1;
-	double Value = 2;
-	int64 Unix = 3;
-} 
+  int32 ObuId = 1;
+  double Value =2;
+  int64 Unix = 3;
+}
