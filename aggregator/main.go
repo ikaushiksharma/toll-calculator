@@ -17,7 +17,7 @@ import (
 	"google.golang.org/grpc"
 )
 func main() {
-	httpListenAddr := flag.String("httplistenaddr", ":3000", "server listen address of http transport server")
+	httpListenAddr := flag.String("httplistenaddr", ":4000", "server listen address of http transport server")
 	grpcListenAddr := flag.String("grpclistenaddr", ":8080", "server listen address of http transport server")
 	flag.Parse()
 
@@ -102,6 +102,11 @@ func HandleGetInvoice(svc Aggregator) http.HandlerFunc {
 
 func HandleAggregate(svc Aggregator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "method not supported"})
+			return
+		}
+
 		var Distance types.Distance
 		if err := json.NewDecoder(r.Body).Decode(&Distance); err != nil {
 			WriteJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
