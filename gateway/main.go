@@ -41,7 +41,7 @@ func makeApifunc(fn apifunc) http.HandlerFunc {
 func main() {
 	listenAddr := flag.String("listenAddr", ":8000", "HTTP server listen address")
 	flag.Parse()
-	aggregatorServiceAddr := flag.String("aggregatorServiceAddr", "http://localhost:3000", "aggregator server listen address")
+	aggregatorServiceAddr := flag.String("aggregatorServiceAddr", "http://localhost:4000", "aggregator server listen address")
 	flag.Parse()
 	var (
 		client     = client.NewHTTPClient(*aggregatorServiceAddr) // endpoint of the aggregator service
